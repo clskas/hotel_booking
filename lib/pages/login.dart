@@ -1,76 +1,47 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:hotel_booking/pages/login.dart';
-import 'package:hotel_booking/services/database.dart';
-import 'package:hotel_booking/services/shared_pref.dart';
+import 'package:hotel_booking/pages/signup.dart';
 import 'package:hotel_booking/services/widget_support.dart';
-import 'package:random_string/random_string.dart';
 
-class Signup extends StatefulWidget {
-  const Signup({super.key});
+class Login extends StatefulWidget {
+  const Login({super.key});
 
   @override
-  State<Signup> createState() => _SignupState();
+  State<Login> createState() => _LoginState();
 }
 
-class _SignupState extends State<Signup> {
-  String email = "", password = "", name = "";
+class _LoginState extends State<Login> {
+
+   String email = "", password = "", name = "";
   TextEditingController namecontroller = TextEditingController();
   TextEditingController passwordcontroller = TextEditingController();
   TextEditingController mailcontroller = TextEditingController();
 
-  registration() async {
-    if (password != "" &&
-        namecontroller.text != "" &&
-        mailcontroller.text != "") {
-      try {
-        UserCredential userCredential = await FirebaseAuth.instance
-            .createUserWithEmailAndPassword(email: email, password: password);
-
-        String id = randomAlphaNumeric(10);
-        Map<String, dynamic> userInfoMap = {
-          "name": namecontroller.text,
-          "Email": mailcontroller.text,
-          "id": id,
-        };
-        await SharedpreferenceHelper().saveUserName(namecontroller.text);
-        await SharedpreferenceHelper().saveUserEmail(namecontroller.text);
-        await SharedpreferenceHelper().saveUserId(id);
-
-        await DatabaseMethods().addUserInfo(userInfoMap, id);
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.green,
-            content: Text(
-              "Registered Successfully!",
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-            ),
-          ),
-        );
-      } on FirebaseAuthException catch (e) {
-        if (e.code == 'weak-password') {
+  userLogin() async {
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+    } on FirebaseAuthException catch(e) {
+      if (e.code == 'user-not-found') {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               backgroundColor: Colors.orangeAccent,
               content: Text(
-                "Password provided is too weak",
+                "No user found for this email",
                 style: TextStyle(fontSize: 18.0),
               ),
             ),
           );
-        } else if (e.code == "email-already-in-use") {
+        } else if (e.code == "wrong-password") {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               backgroundColor: Colors.orangeAccent,
               content: Text(
-                "Account Already exists",
+                "Your password is not correct",
                 style: TextStyle(fontSize: 18.0),
               ),
             ),
           );
         }
-      }
     }
   }
 
@@ -80,24 +51,13 @@ class _SignupState extends State<Signup> {
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Container(
-          margin: EdgeInsets.only(top: 40.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Center(
-                child: Image.asset(
-                  "assets/images/signup.png",
-                  height: 300,
-                  width: 300,
-                  fit: BoxFit.cover,
-                ),
-              ),
+              Image.asset("assets/images/login.png"),
               SizedBox(height: 5.0),
               Center(
-                child: Text(
-                  "Sign Up",
-                  style: AppWidget.headlinetextstyle(25.0),
-                ),
+                child: Text("Login", style: AppWidget.headlinetextstyle(25.0)),
               ),
               SizedBox(height: 5.0),
               Center(
@@ -111,26 +71,7 @@ class _SignupState extends State<Signup> {
                 padding: const EdgeInsets.only(left: 30.0),
                 child: Text("Name", style: AppWidget.normaltextstyle(20.0)),
               ),
-              SizedBox(height: 10.0),
-              Container(
-                margin: EdgeInsets.only(left: 30.0, right: 30),
-                decoration: BoxDecoration(
-                  color: Color(0xffececf8),
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                child: TextField(
-                  controller: namecontroller,
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    prefixIcon: Icon(
-                      Icons.person,
-                      color: const Color.fromARGB(255, 3, 77, 137),
-                    ),
-                    hintText: "Enter Name",
-                    hintStyle: AppWidget.normaltextstyle(18.0),
-                  ),
-                ),
-              ),
+
               SizedBox(height: 10.0),
               Padding(
                 padding: const EdgeInsets.only(left: 30.0),
@@ -144,7 +85,6 @@ class _SignupState extends State<Signup> {
                   borderRadius: BorderRadius.circular(10.0),
                 ),
                 child: TextField(
-                  controller: mailcontroller,
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     prefixIcon: Icon(
@@ -169,8 +109,6 @@ class _SignupState extends State<Signup> {
                   borderRadius: BorderRadius.circular(10.0),
                 ),
                 child: TextField(
-                  obscureText: true,
-                  controller: passwordcontroller,
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     prefixIcon: Icon(
@@ -182,35 +120,34 @@ class _SignupState extends State<Signup> {
                   ),
                 ),
               ),
-              SizedBox(height: 10.0),
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    if (namecontroller.text != "" &&
-                        mailcontroller.text != "" &&
-                        passwordcontroller.text != "") {
-                      email = mailcontroller.text;
-                      password = passwordcontroller.text;
-                    }
-                    registration();
-                  });
-                },
-                child: Center(
-                  child: Container(
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 3, 77, 137),
-                      borderRadius: BorderRadius.circular(10.0),
+              Padding(
+                padding: const EdgeInsets.only(right: 30.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      "Forgot Password",
+                      style: AppWidget.normaltextstyle(18.0),
                     ),
-                    width: MediaQuery.of(context).size.width / 2,
-                    child: Center(
-                      child: Text(
-                        "Sign Up",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24.0,
-                          fontWeight: FontWeight.bold,
-                        ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 20.0),
+              Center(
+                child: Container(
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 3, 77, 137),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  width: MediaQuery.of(context).size.width / 2,
+                  child: Center(
+                    child: Text(
+                      "Login",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24.0,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
@@ -221,7 +158,7 @@ class _SignupState extends State<Signup> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Already have an account?",
+                    "Don't have an account?",
                     style: AppWidget.normaltextstyle(18.0),
                   ),
                   SizedBox(width: 5.0),
@@ -229,11 +166,11 @@ class _SignupState extends State<Signup> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Login()),
+                        MaterialPageRoute(builder: (context) => Signup()),
                       );
                     },
                     child: Text(
-                      "Login",
+                      "Sign Up",
                       style: AppWidget.headlinetextstyle(20.0),
                     ),
                   ),

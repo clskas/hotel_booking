@@ -19,7 +19,7 @@ class _DetailsPageState extends State<DetailsPage> {
             children: [
               Stack(
                 children: [
-                  Container(
+                  SizedBox(
                     height: MediaQuery.of(context).size.height / 2.5,
                     width: MediaQuery.of(context).size.width,
                     child: ClipRRect(
