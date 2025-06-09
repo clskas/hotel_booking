@@ -1,28 +1,37 @@
 import 'package:flutter/material.dart';
 
-
-class AppWidget{
+class AppWidget {
   AppWidget(double d);
 
-  static TextStyle whitetextstyle(double size){
+  static TextStyle whitetextstyle(double size) {
     return TextStyle(
       color: Colors.white,
       fontSize: size,
-      fontWeight: FontWeight.w500
+      fontWeight: FontWeight.w500,
     );
   }
-  static TextStyle headlinetextstyle(double size){
+
+  static TextStyle boldwhitetextstyle(double size) {
+    return TextStyle(
+      color: Colors.white,
+      fontSize: size,
+      fontWeight: FontWeight.bold,
+    );
+  }
+
+  static TextStyle headlinetextstyle(double size) {
     return TextStyle(
       color: Colors.black,
       fontSize: size,
-      fontWeight: FontWeight.bold
+      fontWeight: FontWeight.bold,
     );
   }
-  static TextStyle normaltextstyle(double size){
+
+  static TextStyle normaltextstyle(double size) {
     return TextStyle(
       color: Colors.black,
       fontSize: size,
-      fontWeight: FontWeight.w500
+      fontWeight: FontWeight.w500,
     );
   }
 }

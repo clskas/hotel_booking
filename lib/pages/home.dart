@@ -1,4 +1,8 @@
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:hotel_booking/pages/details_page.dart';
+import 'package:hotel_booking/services/database.dart';
 import 'package:hotel_booking/services/widget_support.dart';
 
 class Home extends StatefulWidget {
@@ -9,6 +13,123 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  Stream? hotelStream;
+
+  getonload() async {
+    hotelStream = await DatabaseMethods().getHotels();
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getonload();
+  }
+
+  Widget allHotels() {
+    return StreamBuilder(
+      stream: hotelStream,
+      builder: (context, AsyncSnapshot snapshot) {
+        return snapshot.hasData
+            ? ListView.builder(
+              scrollDirection: Axis.horizontal,
+              shrinkWrap: true,
+              itemCount: snapshot.data.docs.length,
+              itemBuilder: (context, index) {
+                DocumentSnapshot ds = snapshot.data.docs[index];
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) => DetailsPage(
+                              bathroom:  ds["Bathroom"],
+                              desc: ds["HotelDesc"],
+                             hdtv: ds["HDTV"],
+                             kitchen: ds["Kitchen"],
+                             name: ds["HotelName"],
+                             price: ds["HotelCharges"],
+                             wifi: ds["Wifi"],
+                              hotelid: ds.id,
+                            ),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    margin: EdgeInsets.only(left: 20.0, bottom: 5.0),
+                    child: Material(
+                      elevation: 2.0,
+                      borderRadius: BorderRadius.circular(30),
+                      child: Container(
+                        // width: MediaQuery.of(context).size.width / 1.2,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(30.0),
+                              child: Image.asset(
+                                'assets/images/hotel1.jpg',
+                                width: MediaQuery.of(context).size.width / 1.2,
+                                fit: BoxFit.cover,
+                                height: 230,
+                              ),
+                            ),
+                            SizedBox(height: 10.0),
+                            Padding(
+                              padding: EdgeInsets.only(left: 20.0),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    ds["HotelName"],
+                                    style: AppWidget.headlinetextstyle(22.0),
+                                  ),
+                                  SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width / 3.1,
+                                  ),
+                                  Text(
+                                    "\$" + ds["HotelCharges"],
+                                    style: AppWidget.headlinetextstyle(20.0),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: 5.0),
+                            Padding(
+                              padding: EdgeInsets.only(left: 20.0),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.location_on,
+                                    color: Colors.blue,
+                                    size: 30.0,
+                                  ),
+                                  SizedBox(width: 5.0),
+                                  Text(
+                                    ds["HotelAdresse"],
+                                    style: AppWidget.normaltextstyle(16.0),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            )
+            : Container();
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,231 +217,8 @@ class _HomeState extends State<Home> {
                 ),
               ),
               SizedBox(height: 20.0),
-              // ignore: sized_box_for_whitespace
-              Container(
-                height: 320,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    // ignore: avoid_unnecessary_containers
-                    Container(
-                      margin: EdgeInsets.only(left: 20.0, bottom: 5.0),
-                      child: Material(
-                        elevation: 2.0,
-                        borderRadius: BorderRadius.circular(30),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(30),
-                          ),
+              SizedBox(height: 330, child: allHotels()),
 
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(30.0),
-                                child: Image.asset(
-                                  'assets/images/hotel1.jpg',
-                                  width:
-                                      MediaQuery.of(context).size.width / 1.2,
-                                  fit: BoxFit.cover,
-                                  height: 230,
-                                ),
-                              ),
-                              SizedBox(height: 10.0),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 20.0),
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      "Hotel Beach",
-                                      style: AppWidget.headlinetextstyle(24.0),
-                                    ),
-                                    SizedBox(
-                                      width:
-                                          MediaQuery.of(context).size.width /
-                                          3.5,
-                                    ),
-                                    Text(
-                                      "\$20",
-                                      style: AppWidget.headlinetextstyle(24.0),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(height: 5.0),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 20.0),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.location_on,
-                                      color: Colors.blue,
-                                      size: 30,
-                                    ),
-                                    Text(
-                                      'Near main market',
-                                      style: AppWidget.normaltextstyle(18.0),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(left: 20.0, bottom: 5.0),
-                      child: Material(
-                        elevation: 2.0,
-                        borderRadius: BorderRadius.circular(30),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(30.0),
-                                child: Image.asset(
-                                  'assets/images/hotel2.jpg',
-                                  width:
-                                      MediaQuery.of(context).size.width / 1.0,
-                                  fit: BoxFit.cover,
-                                  height: 230,
-                                ),
-                              ),
-                              SizedBox(height: 10.0),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 20.0),
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      "Okapi Palace Hotel",
-                                      style: AppWidget.headlinetextstyle(24.0),
-                                    ),
-                                    SizedBox(
-                                      width:
-                                          MediaQuery.of(context).size.width /
-                                          3.5,
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                        right: 5.0,
-                                      ),
-                                      child: Text(
-                                        "\$100",
-                                        style: AppWidget.headlinetextstyle(
-                                          24.0,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(height: 5.0),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 20.0),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.location_on,
-                                      color: Colors.blue,
-                                      size: 30,
-                                    ),
-                                    Text(
-                                      'Near Scake entreprise, Beni',
-                                      style: AppWidget.normaltextstyle(18.0),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(left: 20.0, bottom: 5.0),
-                      child: Material(
-                        elevation: 2.0,
-                        borderRadius: BorderRadius.circular(30),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(30.0),
-                                child: Image.asset(
-                                  'assets/images/hotel3.jpg',
-                                  width:
-                                      MediaQuery.of(context).size.width / 1.2,
-                                  fit: BoxFit.cover,
-                                  height: 230,
-                                ),
-                              ),
-                              SizedBox(height: 10.0),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 20.0),
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      "Albertine Hotel",
-                                      style: AppWidget.headlinetextstyle(24.0),
-                                    ),
-                                    SizedBox(
-                                      width:
-                                          MediaQuery.of(context).size.width /
-                                          3.5,
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                        right: 20.0,
-                                      ),
-                                      child: Text(
-                                        "\$50",
-                                        style: AppWidget.headlinetextstyle(
-                                          24.0,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(height: 5.0),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 20.0),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.location_on,
-                                      color: Colors.blue,
-                                      size: 30,
-                                    ),
-                                    Text(
-                                      'Near main Camping',
-                                      style: AppWidget.normaltextstyle(18.0),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
               SizedBox(height: 10.0),
               Padding(
                 padding: const EdgeInsets.only(left: 20.0),
@@ -528,7 +426,6 @@ class _HomeState extends State<Home> {
                 ),
               ),
               SizedBox(height: 50),
-              
             ],
           ),
         ),

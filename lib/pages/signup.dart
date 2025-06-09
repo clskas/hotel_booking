@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:hotel_booking/pages/bottomvav.dart';
 import 'package:hotel_booking/pages/login.dart';
 import 'package:hotel_booking/services/database.dart';
 import 'package:hotel_booking/services/shared_pref.dart';
@@ -47,6 +48,10 @@ class _SignupState extends State<Signup> {
               style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
             ),
           ),
+        );
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => Bottomnav()),
         );
       } on FirebaseAuthException catch (e) {
         if (e.code == 'weak-password') {

@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:hotel_booking/pages/bottomvav.dart';
 import 'package:hotel_booking/pages/signup.dart';
 import 'package:hotel_booking/services/widget_support.dart';
 
@@ -11,37 +12,42 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-
-   String email = "", password = "", name = "";
-  TextEditingController namecontroller = TextEditingController();
+  String email = "", password = "";
   TextEditingController passwordcontroller = TextEditingController();
   TextEditingController mailcontroller = TextEditingController();
 
   userLogin() async {
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
-    } on FirebaseAuthException catch(e) {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Bottomnav()),
+      );
+    } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: Colors.orangeAccent,
-              content: Text(
-                "No user found for this email",
-                style: TextStyle(fontSize: 18.0),
-              ),
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.orangeAccent,
+            content: Text(
+              "No user found for this email",
+              style: TextStyle(fontSize: 18.0),
             ),
-          );
-        } else if (e.code == "wrong-password") {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: Colors.orangeAccent,
-              content: Text(
-                "Your password is not correct",
-                style: TextStyle(fontSize: 18.0),
-              ),
+          ),
+        );
+      } else if (e.code == "wrong-password") {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.orangeAccent,
+            content: Text(
+              "Wrong password provided by user",
+              style: TextStyle(fontSize: 18.0, color: Colors.black),
             ),
-          );
-        }
+          ),
+        );
+      }
     }
   }
 
@@ -85,6 +91,7 @@ class _LoginState extends State<Login> {
                   borderRadius: BorderRadius.circular(10.0),
                 ),
                 child: TextField(
+                  controller: mailcontroller,
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     prefixIcon: Icon(
@@ -109,6 +116,8 @@ class _LoginState extends State<Login> {
                   borderRadius: BorderRadius.circular(10.0),
                 ),
                 child: TextField(
+                  obscureText: true,
+                  controller: passwordcontroller,
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     prefixIcon: Icon(
@@ -133,21 +142,33 @@ class _LoginState extends State<Login> {
                 ),
               ),
               SizedBox(height: 20.0),
-              Center(
-                child: Container(
-                  height: 60,
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 3, 77, 137),
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  width: MediaQuery.of(context).size.width / 2,
-                  child: Center(
-                    child: Text(
-                      "Login",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24.0,
-                        fontWeight: FontWeight.bold,
+              GestureDetector(
+                onTap: () {
+                  if (mailcontroller.text != "" &&
+                      passwordcontroller.text != "") {
+                    setState(() {
+                      email = mailcontroller.text;
+                      password = passwordcontroller.text;
+                    });
+                    userLogin();
+                  }
+                },
+                child: Center(
+                  child: Container(
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 3, 77, 137),
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    width: MediaQuery.of(context).size.width / 2,
+                    child: Center(
+                      child: Text(
+                        "Login",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24.0,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
