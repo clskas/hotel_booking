@@ -14,7 +14,6 @@ class _OwnerHomeState extends State<OwnerHome> {
       body: Container(
         child: Column(
           children: [
-            
           ],
         ),
       ),

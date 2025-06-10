@@ -13,7 +13,8 @@ import 'package:random_string/random_string.dart';
 class DetailsPage extends StatefulWidget {
   String name, price, wifi, hdtv, kitchen, bathroom, desc, hotelid;
 
-  DetailsPage({super.key, 
+  DetailsPage({
+    super.key,
     required this.bathroom,
     required this.desc,
     required this.hdtv,
@@ -32,6 +33,7 @@ class _DetailsPageState extends State<DetailsPage> {
   Map<String, dynamic>? paymentIntent;
   TextEditingController guestcontroller = TextEditingController();
 
+  // ignore: prefer_typing_uninitialized_variables
   var finalamount;
   DateTime? startDate;
   DateTime? endDate;
@@ -39,7 +41,7 @@ class _DetailsPageState extends State<DetailsPage> {
   String? username, userid, userimage;
 
   getontheload() async {
-    userimage = await SharedpreferenceHelper().getUserName();
+    username = await SharedpreferenceHelper().getUserName();
     userid = await SharedpreferenceHelper().getUserId();
     userimage = await SharedpreferenceHelper().getUserImage();
     setState(() {});
@@ -322,6 +324,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: TextField(
+                                controller: guestcontroller,
                                 onChanged: (value) {
                                   // finalamount = finalamount * int.parse(value);
                                   if (value.isNotEmpty &&
@@ -381,7 +384,7 @@ class _DetailsPageState extends State<DetailsPage> {
 
   Future<void> makePayement(String amount) async {
     try {
-      paymentIntent = await createPaymentIntent(amount, 'AED');
+      paymentIntent = await createPaymentIntent(amount, 'USD');
       await Stripe.instance
           .initPaymentSheet(
             paymentSheetParameters: SetupPaymentSheetParameters(
@@ -389,8 +392,7 @@ class _DetailsPageState extends State<DetailsPage> {
               style: ThemeMode.dark,
               merchantDisplayName: 'Adnan',
             ),
-          )
-          .then((value) {});
+          ).then((value) {});
       displayPaymentSheet(amount);
     } catch (e, s) {
       print('exception:$e$s');
@@ -404,8 +406,8 @@ class _DetailsPageState extends State<DetailsPage> {
           .then((value) async {
             String addid = randomAlphaNumeric(10);
             Map<String, dynamic> userhotelbooking = {
-              "Userna": username,
-              "UserImage": userimage,
+              "Username": username,
+              // "UserImage": userimage,
               "CheckIn": _formatDate(startDate).toString(),
               "CheckOut": _formatDate(endDate).toString(),
               "Guests": guestcontroller.text,
@@ -434,6 +436,7 @@ class _DetailsPageState extends State<DetailsPage> {
             );
 
             showDialog(
+              // ignore: use_build_context_synchronously
               context: context,
               builder:
                   (_) => AlertDialog(
@@ -458,6 +461,7 @@ class _DetailsPageState extends State<DetailsPage> {
     } on StripeException catch (e) {
       print("Error is:===> $e");
       showDialog(
+        // ignore: use_build_context_synchronously
         context: context,
         builder: (_) => AlertDialog(content: Text("Concelled")),
       );

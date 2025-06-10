@@ -1,12 +1,13 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
-import 'package:hotel_booking/pages/bottomvav.dart';
+import 'package:hotel_booking/pages/login.dart';
+import 'package:hotel_booking/pages/signup.dart';
 import 'package:hotel_booking/services/constant.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Stripe.publishableKey = publishedkey;
+  Stripe.publishableKey = publishablekey;
   await Firebase.initializeApp();
 
   runApp(const MyApp());
@@ -39,7 +40,7 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: Bottomnav(),
+      home: Signup(),
     );
   }
 }
