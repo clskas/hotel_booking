@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:hotel_booking/hotelowner/hotel_details.dart';
 import 'package:hotel_booking/pages/bottomvav.dart';
 import 'package:hotel_booking/pages/login.dart';
 import 'package:hotel_booking/services/database.dart';
@@ -8,7 +9,8 @@ import 'package:hotel_booking/services/widget_support.dart';
 import 'package:random_string/random_string.dart';
 
 class Signup extends StatefulWidget {
-  const Signup({super.key});
+  String redirect;
+  Signup({super.key, required this.redirect});
 
   @override
   State<Signup> createState() => _SignupState();
@@ -33,12 +35,14 @@ class _SignupState extends State<Signup> {
           "name": namecontroller.text,
           "Email": mailcontroller.text,
           "id": id,
+          "Roles": widget.redirect == "Owner" ? "Owner" : "User",
+          "Wallet": "0",
         };
         await SharedpreferenceHelper().saveUserName(namecontroller.text);
         await SharedpreferenceHelper().saveUserEmail(namecontroller.text);
         await SharedpreferenceHelper().saveUserId(id);
-
         await DatabaseMethods().addUserInfo(userInfoMap, id);
+        await SharedpreferenceHelper().saveUserWallet("0");
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -49,10 +53,15 @@ class _SignupState extends State<Signup> {
             ),
           ),
         );
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => Bottomnav()),
-        );
+        widget.redirect == "Owner"
+            ? Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HotelDetails()),
+            )
+            : Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => Bottomnav()),
+            );
       } on FirebaseAuthException catch (e) {
         if (e.code == 'weak-password') {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -234,7 +243,10 @@ class _SignupState extends State<Signup> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Login()),
+                        MaterialPageRoute(
+                          builder:
+                              (context) => Login(redirect: widget.redirect),
+                        ),
                       );
                     },
                     child: Text(

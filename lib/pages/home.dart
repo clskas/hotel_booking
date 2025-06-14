@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hotel_booking/pages/details_page.dart';
@@ -44,13 +43,13 @@ class _HomeState extends State<Home> {
                       MaterialPageRoute(
                         builder:
                             (context) => DetailsPage(
-                              bathroom:  ds["Bathroom"],
+                              bathroom: ds["Bathroom"],
                               desc: ds["HotelDesc"],
-                             hdtv: ds["HDTV"],
-                             kitchen: ds["Kitchen"],
-                             name: ds["HotelName"],
-                             price: ds["HotelCharges"],
-                             wifi: ds["Wifi"],
+                              hdtv: ds["HDTV"],
+                              kitchen: ds["Kitchen"],
+                              name: ds["HotelName"],
+                              price: ds["HotelCharges"],
+                              wifi: ds["Wifi"],
                               hotelid: ds.id,
                             ),
                       ),
@@ -73,7 +72,8 @@ class _HomeState extends State<Home> {
                             ClipRRect(
                               borderRadius: BorderRadius.circular(30.0),
                               child: Image.asset(
-                                'assets/images/hotel1.jpg',
+                                //'assets/images/hotel1.jpg',
+                                ds["Image"],
                                 width: MediaQuery.of(context).size.width / 1.2,
                                 fit: BoxFit.cover,
                                 height: 230,
@@ -90,11 +90,11 @@ class _HomeState extends State<Home> {
                                   ),
                                   SizedBox(
                                     width:
-                                        MediaQuery.of(context).size.width / 3.1,
+                                        MediaQuery.of(context).size.width / 3.2,
                                   ),
                                   Text(
                                     "\$" + ds["HotelCharges"],
-                                    style: AppWidget.headlinetextstyle(20.0),
+                                    style: AppWidget.headlinetextstyle(18.0),
                                   ),
                                 ],
                               ),

@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hotel_booking/hotelowner/owner_home.dart';
 import 'package:hotel_booking/services/database.dart';
+import 'package:hotel_booking/services/shared_pref.dart';
 import 'package:hotel_booking/services/widget_support.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:random_string/random_string.dart';
 
 class HotelDetails extends StatefulWidget {
   const HotelDetails({super.key});
@@ -19,6 +19,19 @@ class _HotelDetailsState extends State<HotelDetails> {
       isChecked1 = false,
       isChecked2 = false,
       isChecked3 = false;
+
+  String? id;
+
+  getonthesharedpref() async {
+    id = await SharedpreferenceHelper().getUserId();
+    setState(() {});
+  }
+
+  @override
+  initState() {
+    super.initState();
+    getonthesharedpref();
+  }
 
   File? selectedImage;
   final ImagePicker _picker = ImagePicker();
@@ -275,7 +288,7 @@ class _HotelDetailsState extends State<HotelDetails> {
                     SizedBox(height: 20.0),
                     GestureDetector(
                       onTap: () async {
-                        String addId = randomAlphaNumeric(10);
+                        // String addId = randomAlphaNumeric(10);
                         // Reference fireStoreRef = FirebaseStorage.instance.ref().child("blogimage").child(addId);
                         // final UploadTask task = fireStoreRef.putFile(selectedImage!);
                         // var downloadUrl = await (await task).ref.getDownloadURL();
@@ -290,9 +303,10 @@ class _HotelDetailsState extends State<HotelDetails> {
                           "HDTV": isChecked1 ? "true" : "false",
                           "Kitchen": isChecked2 ? "true" : "false",
                           "Bathroom": isChecked3 ? "true" : "false",
-                          "id": addId,
+                          "id": id,
                         };
-                        await DatabaseMethods().addHotel(addHotel, addId);
+                        await DatabaseMethods().addHotel(addHotel, id!);
+                        // await SharedpreferenceHelper().saveUserId(id);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             backgroundColor: Colors.green,

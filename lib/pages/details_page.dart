@@ -120,6 +120,7 @@ class _DetailsPageState extends State<DetailsPage> {
                       ),
                       child: Image.asset(
                         "assets/images/hotel1.jpg",
+
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -392,7 +393,8 @@ class _DetailsPageState extends State<DetailsPage> {
               style: ThemeMode.dark,
               merchantDisplayName: 'Adnan',
             ),
-          ).then((value) {});
+          )
+          .then((value) {});
       displayPaymentSheet(amount);
     } catch (e, s) {
       print('exception:$e$s');

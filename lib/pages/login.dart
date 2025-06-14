@@ -1,18 +1,23 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:hotel_booking/hotelowner/owner_home.dart';
 import 'package:hotel_booking/pages/bottomvav.dart';
 import 'package:hotel_booking/pages/signup.dart';
+import 'package:hotel_booking/services/database.dart';
+import 'package:hotel_booking/services/shared_pref.dart';
 import 'package:hotel_booking/services/widget_support.dart';
 
 class Login extends StatefulWidget {
-  const Login({super.key});
+  String redirect;
+  Login({super.key, required this.redirect});
 
   @override
   State<Login> createState() => _LoginState();
 }
 
 class _LoginState extends State<Login> {
-  String email = "", password = "";
+  String email = "", password = "", role = "", name = "", id = "", wallet = "";
   TextEditingController passwordcontroller = TextEditingController();
   TextEditingController mailcontroller = TextEditingController();
 
@@ -22,10 +27,28 @@ class _LoginState extends State<Login> {
         email: email,
         password: password,
       );
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => Bottomnav()),
+      QuerySnapshot querySnapshot = await DatabaseMethods().getUserbyemail(
+        email,
       );
+      name = "${querySnapshot.docs[0]["name"]}";
+      id = "${querySnapshot.docs[0]["id"]}";
+      role = "${querySnapshot.docs[0]["Role"]}";
+      wallet = "${querySnapshot.docs[0]["Wallet"]}";
+
+      await SharedpreferenceHelper().saveUserName(name);
+      await SharedpreferenceHelper().saveUserEmail(mailcontroller.text);
+      await SharedpreferenceHelper().saveUserId(id);
+      await SharedpreferenceHelper().saveUserWallet(wallet);
+
+      role == "Owner"
+          ? Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => OwnerHome()),
+          )
+          : Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => Bottomnav()),
+          );
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -187,7 +210,10 @@ class _LoginState extends State<Login> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Signup()),
+                        MaterialPageRoute(
+                          builder:
+                              (context) => Signup(redirect: widget.redirect),
+                        ),
                       );
                     },
                     child: Text(
